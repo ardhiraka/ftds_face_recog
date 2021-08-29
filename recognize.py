@@ -5,7 +5,6 @@ import imutils
 import pickle
 import cv2
 import os
-import dlib
 
 # construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
@@ -75,7 +74,7 @@ for i in range(0, detections.shape[2]):
 		if fW < 20 or fH < 20:
 			continue
 
-        # construct a blob for the face ROI, then pass the blob
+		# construct a blob for the face ROI, then pass the blob
 		# through our face embedding model to obtain the 128-d
 		# quantification of the face
 		faceBlob = cv2.dnn.blobFromImage(face, 1.0 / 255, (96, 96),
@@ -89,42 +88,15 @@ for i in range(0, detections.shape[2]):
 		proba = preds[j]
 		name = le.classes_[j]
 
-        # draw the bounding box of the face along with the associated
+		# draw the bounding box of the face along with the associated
 		# probability
 		text = "{}: {:.2f}%".format(name, proba * 100)
 		y = startY - 10 if startY - 10 > 10 else startY + 10
 		cv2.rectangle(image, (startX, startY), (endX, endY),
-			(255, 159, 135), 2)
+			(0, 0, 255), 2)
 		cv2.putText(image, text, (startX, y),
-			cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 159, 135), 2)
-
-# Face Landmark
-detector = dlib.get_frontal_face_detector()
-
-predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
-
-gray = cv2.cvtColor(src=image, code=cv2.COLOR_BGR2GRAY)
-faces = detector(gray)
-
-for face in faces:
-    x1 = face.left() # left point
-    y1 = face.top() # top point
-    x2 = face.right() # right point
-    y2 = face.bottom() # bottom point
-
-    landmarks = predictor(image=gray, box=face)
-
-    # Loop through all the points
-    for n in range(0, 68):
-        x = landmarks.part(n).x
-        y = landmarks.part(n).y
-
-        # Draw a circle
-        cv2.circle(img=image, center=(x, y), radius=2, color=(243, 255, 148), thickness=-1)
+			cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 0, 255), 2)
 
 # show the output image
-cv2.imshow("Face Landmark Detector", image)
+cv2.imshow("Image", image)
 cv2.waitKey(0)
-
-# do a bit of cleanup
-cv2.destroyAllWindows()
